@@ -6,6 +6,11 @@ const postPage = document.querySelector("#post")
 const postContainer = document.querySelector("#post-container")
 const comentsContainer = document.querySelector("#comments-container")
 
+const commentsForm = document.querySelector("#coment-form")
+const emailInput = document.querySelector("#email")
+const bodyInput = document.querySelector("#body")
+
+
 //Get all posts
 async function getAllPosts(){
     const response = await fetch(url)
@@ -83,8 +88,33 @@ function createComment(comment){
     comentsContainer.appendChild(div)
 }
 
+async function postComment(comment) {
+    const response = await fetch(`${url}/${postId}/comments`, {
+        method: "POST",
+        body: comment,
+        headers:{
+            "Content-type": "application/json"
+        },
+    })
+
+    const data = await response.json()
+    createComment(data)
+}
+
 if (!postId){
     getAllPosts()
 }else{
     getPost(postId)
+
+commentsForm.addEventListener("submit", (e)=>{
+    e.preventDefault();
+
+    let comment = {
+        email:emailInput.value,
+        body: bodyInput.value
+    }
+    comment = JSON.stringify(comment) //criar um texto JSON válido
+
+    postComment(comment)
+})
 }
